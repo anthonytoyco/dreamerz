@@ -1,6 +1,6 @@
 'use client';
 
-import useSpeechRecognition from '../hooks/useSpeechRecognition';
+// import useSpeechRecognition from '../hooks/useSpeechRecognition';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -13,8 +13,12 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { AudioLines, Mic } from 'lucide-react';
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from 'react-speech-recognition';
 
 export default function VoiceForm() {
+  /*
   const { text, listening, startListening, stopListening, hasSupport } =
     useSpeechRecognition();
 
@@ -23,6 +27,23 @@ export default function VoiceForm() {
       stopListening();
     } else {
       startListening();
+    }
+  };
+*/
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  const toggleRecord = () => {
+    if (listening) {
+      SpeechRecognition.stopListening();
+    } else {
+      resetTranscript();
+      SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
     }
   };
 
@@ -45,7 +66,9 @@ export default function VoiceForm() {
               ready to start recording.
             </DialogDescription>
           </DialogHeader>
-          {hasSupport ? (
+          {!browserSupportsSpeechRecognition ? (
+            <Invalid />
+          ) : (
             <>
               <div className="flex flex-col items-center space-y-4">
                 <Button
@@ -61,7 +84,7 @@ export default function VoiceForm() {
                   Status: {listening ? 'Listening...' : 'Idle'}
                 </span>
                 <p className="text-center p-2 text-sm border rounded-md  w-full">
-                  {text || 'Start speaking to see the transcription.'}
+                  {transcript || 'Start speaking to see the transcription.'}
                 </p>
               </div>
               <DialogFooter>
@@ -73,8 +96,6 @@ export default function VoiceForm() {
                 </DialogClose>
               </DialogFooter>
             </>
-          ) : (
-            <Invalid />
           )}
         </DialogContent>
       </form>
