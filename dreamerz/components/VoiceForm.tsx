@@ -1,6 +1,5 @@
 'use client';
 
-// import useSpeechRecognition from '../hooks/useSpeechRecognition';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -18,19 +17,6 @@ import SpeechRecognition, {
 } from 'react-speech-recognition';
 
 export default function VoiceForm() {
-  /*
-  const { text, listening, startListening, stopListening, hasSupport } =
-    useSpeechRecognition();
-
-  const toggleRecord = () => {
-    if (listening) {
-      stopListening();
-    } else {
-      startListening();
-    }
-  };
-*/
-
   const {
     transcript,
     listening,
