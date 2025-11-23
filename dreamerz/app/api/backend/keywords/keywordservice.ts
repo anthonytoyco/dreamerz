@@ -11,7 +11,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 export async function getAllKeywords() {
   const { data, error } = await supabase
     .from("keywords")
-    .select("name");
+    .select("id,name");
 
   if (error) throw error;
   return data ?? [];
