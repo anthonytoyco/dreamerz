@@ -18,4 +18,7 @@ export const formSchema = z.object({
     .array(z.string(), { error: "Please select at least one item" })
     .min(1, "Please select at least one item"),
   recurring: z.boolean().default(false),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  name: z.string().optional(),
 });

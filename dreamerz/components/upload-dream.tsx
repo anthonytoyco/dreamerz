@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { useAction } from "next-safe-action/hooks";
 import { motion } from "motion/react";
-import { Check } from "lucide-react";
+import { Check, MapPin, Loader2 } from "lucide-react";
+import { useState } from "react";
 import {
   Field,
   FieldGroup,
@@ -48,6 +49,50 @@ export function DreamForm() {
       recurring: false,
     },
   });
+
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  const handleGetLocation = () => {
+    setIsLoadingLocation(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          form.setValue("latitude", latitude);
+          form.setValue("longitude", longitude);
+
+          try {
+            const response = await fetch("/api/gemini/location", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ latitude, longitude }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              form.setValue("location", data.location);
+            } else {
+              console.error("Failed to get location from Gemini");
+            }
+          } catch (error) {
+            console.error("Error fetching location:", error);
+          } finally {
+            setIsLoadingLocation(false);
+          }
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setIsLoadingLocation(false);
+        }
+      );
+    } else {
+      console.error("Geolocation not supported");
+      setIsLoadingLocation(false);
+    }
+  };
+
   const formAction = useAction(serverAction, {
     onSuccess: () => {
       // TODO: show success message
@@ -140,6 +185,26 @@ export function DreamForm() {
                 aria-invalid={fieldState.invalid}
                 placeholder="Toronto, Canada"
               />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2 w-fit"
+                onClick={handleGetLocation}
+                disabled={isLoadingLocation}
+              >
+                {isLoadingLocation ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Getting location...
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Get Current Location
+                  </>
+                )}
+              </Button>
               <FieldDescription>
                 The city and country where this dream took place
               </FieldDescription>
@@ -276,7 +341,7 @@ export function DreamForm() {
               <FieldContent>
                 <FieldLabel htmlFor="recurring">Recurring Dream? *</FieldLabel>
                 <FieldDescription>
-                  Did this dream happen before?
+                  Has this dream happened before?
                 </FieldDescription>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
