@@ -45,9 +45,7 @@ export default function VoiceForm() {
               ready to start recording.
             </DialogDescription>
           </DialogHeader>
-          {!hasSupport ? (
-            <Invalid />
-          ) : (
+          {hasSupport ? (
             <>
               <div className="flex flex-col items-center space-y-4">
                 <Button
@@ -75,6 +73,8 @@ export default function VoiceForm() {
                 </DialogClose>
               </DialogFooter>
             </>
+          ) : (
+            <Invalid />
           )}
         </DialogContent>
       </form>
