@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Folder,
-  MoreHorizontal,
-  Share,
-  Trash2,
-  type LucideIcon,
-} from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -25,9 +19,9 @@ import {
 } from '@/components/ui/sidebar';
 
 export function NavProjects({
-  projects,
+  tabs,
 }: {
-  projects: {
+  tabs: {
     name: string;
     url: string;
     icon: LucideIcon;
@@ -39,7 +33,7 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Tabs</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {tabs.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
