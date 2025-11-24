@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import dynamic from "next/dynamic";
+import { AppSidebar } from '@/components/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import dynamic from 'next/dynamic';
 
-const DreamGlobe = dynamic(() => import("@/components/dream-globe"), {
+const DreamGlobe = dynamic(() => import('@/components/dream-globe'), {
   ssr: false,
 });
 const VoiceForm = dynamic(() => import("@/components/voice-form"), {
@@ -19,7 +19,8 @@ export default function Page() {
         <SidebarInset></SidebarInset>
       </SidebarProvider>
       <DreamGlobe />
-      <div className="fixed flex bottom-8 left-1/2 transform -translate-x-1/2  z-50">
+      <div className="fixed flex bottom-8 left-1/2 transform -translate-x-1/2  space-x-4 z-50">
+        <UploadDream />
         <VoiceForm />
       </div>
     </div>
