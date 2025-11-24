@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 import { getSimilarDreams } from "@/app/api/backend/dreams/getdream";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   try {
     const supabase = await createClient();
