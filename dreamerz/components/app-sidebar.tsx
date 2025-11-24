@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { House, Upload, Mail, AudioLines } from 'lucide-react';
+import { House, Upload, AudioLines } from 'lucide-react';
 
 import { NavProjects } from '@/components/nav-projects';
 import { NavUser } from '@/components/nav-user';
@@ -36,11 +36,6 @@ const data = {
       name: 'Voice Upload',
       url: '#',
       icon: AudioLines,
-    },
-    {
-      name: 'Direct Messages',
-      url: '#',
-      icon: Mail,
     },
   ],
 };
