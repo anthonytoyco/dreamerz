@@ -1,16 +1,22 @@
 'use client';
 
 import Globe from 'react-globe.gl';
-import { smallGlobeData } from '@/app/_mock/pointsData';
 import { useEffect, useState } from 'react';
-
+import type { PointData } from '@/types/point-data';
 import PointHoverWindow from './point-hover-window';
 import PointPopupWindow from './point-popup-window';
 
-import type { PointData } from '@/types/point-data';
+interface ArcData {
+  startLat: number;
+  startLng: number;
+  endLat: number;
+  endLng: number;
+  color: [string, string];
+}
 
 export default function DreamGlobe() {
   const [points, setPoints] = useState<PointData[]>([]);
+  const [arcs, setArcs] = useState<ArcData[]>([]);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [hovered, setHovered] = useState<PointData | null>(null);
   const [clicked, setClicked] = useState<PointData | null>(null);
@@ -19,22 +25,39 @@ export default function DreamGlobe() {
     setMousePos({ x: event.clientX, y: event.clientY });
   };
 
-  function onPointClick(point: PointData) {
+  const onPointClick = (point: PointData) => {
     setClicked(point);
-    // Clear hover when a point is clicked so the hover window hides
     setHovered(null);
-  }
+  };
 
-  function onPointHover(point: PointData | null) {
+  const onPointHover = (point: PointData | null) => {
     setHovered(point);
-  }
+  };
 
+  // Fetch points from API
   useEffect(() => {
-    const fetchData = async () => { };
+    const fetchPoints = async () => {
+      try {
+        const res = await fetch('/api/backend/dreams');
+        if (!res.ok) throw new Error('Failed to fetch points');
+        const data: PointData[] = await res.json();
+        setPoints(data);
 
-    fetchData();
+        // Create arcs between consecutive points
+        const arcsData: ArcData[] = data.slice(1).map((point, i) => ({
+          startLat: data[i].lat,
+          startLng: data[i].lng,
+          endLat: point.lat,
+          endLng: point.lng,
+          color: ['red', 'orange'] as [string, string],
+        }));
+        setArcs(arcsData);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-    setPoints(smallGlobeData);
+    fetchPoints();
   }, []);
 
   return (
@@ -44,16 +67,23 @@ export default function DreamGlobe() {
         backgroundColor="#000000"
         animateIn={true}
         pointsData={points}
-        pointLabel={""}
+        pointLat={(d) => (d as PointData).lat}
+        pointLng={(d) => (d as PointData).lng}
+        pointColor={() => 'red'}
+        pointRadius={0.5}
         onPointClick={(point) => onPointClick(point as PointData)}
         onPointHover={(point) => onPointHover(point as PointData | null)}
+        arcsData={arcs}
+        arcStartLat={(d) => (d as ArcData).startLat}
+        arcStartLng={(d) => (d as ArcData).startLng}
+        arcEndLat={(d) => (d as ArcData).endLat}
+        arcEndLng={(d) => (d as ArcData).endLng}
+        arcDashLength={() => 0.5}
+        arcDashGap={() => 0.5}
+        arcDashAnimateTime={() => 2000}
       />
-      {hovered && (
-        <PointHoverWindow mousePos={mousePos} hovered={hovered} />
-      )}
-      {clicked && (
-        <PointPopupWindow point={clicked} onClose={() => setClicked(null)} />
-      )}
+      {hovered && <PointHoverWindow mousePos={mousePos} hovered={hovered} />}
+      {clicked && <PointPopupWindow point={clicked} onClose={() => setClicked(null)} />}
     </div>
   );
 }
